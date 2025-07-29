@@ -21,7 +21,9 @@ export class PermissionGuard implements CanActivate {
 
     const platform = request['platform'];
     const userPermissions: string[] = user?.permission ?? [];
-
+    if (platform === 'client'  &&['DELETE'].includes(request.method)) {
+        throw new HttpException(masterDataErrorMessage.E_009(), HttpStatus.FORBIDDEN);
+      }
     // Super admin shortcut
     if (user?.isSuperAdmin){
        return true;
@@ -42,16 +44,17 @@ export class PermissionGuard implements CanActivate {
     const allowedPrefixes = ['view-', 'create-', 'edit-'];
 
     if (platform === 'client') {
-      const isAllViewPermissions = requiredPermissions.every(p =>
+
+      // Chỉ cho gọi các API có permission prefix phù hợp
+      const isAllAllowed = requiredPermissions.every(p =>
         allowedPrefixes.some((prefix) => p.startsWith(prefix)),
       );
-
-      const hasClientPermission = requiredPermissions.every(p =>
+      const hasPermissions = requiredPermissions.every(p =>
         userPermissions.includes(p),
       );
 
-      if (!isAllViewPermissions || !hasClientPermission) {
-        throw new HttpException(masterDataErrorMessage.E_010(),HttpStatus.FORBIDDEN);
+      if (!isAllAllowed || !hasPermissions) {
+        throw new HttpException(masterDataErrorMessage.E_010(), HttpStatus.FORBIDDEN);
       }
 
       return true;

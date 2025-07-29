@@ -35,7 +35,7 @@ export const masterDataErrorMessage = {
         return e;
     },
     E_009(detail: string = ""): TErrorMessage{
-        const e = buildErrorDetail('009', 'INVALID_OTP', detail);
+        const e = buildErrorDetail('009', 'PLATFORM_ACCESS_DENIED', detail);
         return e;
     },
     E_010(detail: string = ""): TErrorMessage{
