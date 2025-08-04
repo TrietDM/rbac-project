@@ -2,8 +2,8 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PlatformMiddleware } from './shared/middleware/platform.middleware';
-import { AdminModule } from './module/admin.module';
-import { ClientModule } from './module/client.module';
+import { AdminModule } from './module/usecases/modules/admin.module';
+import { ClientModule } from './module/usecases/modules/client.module';
 import { JwtAuthGuard } from './module/usecases/auth/jwt-auth.guard';
 import { JwtService } from '@nestjs/jwt';
 import { PermissionGuard } from './module/usecases/auth/permission.guard';
@@ -44,8 +44,8 @@ async function bootstrap() {
   const jwtService = app.get(JwtService);
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector, jwtService, publicRoutes),
-  new PermissionGuard(reflector)
-);
+  app.get(PermissionGuard),
+  );
 
   const adminDoc = SwaggerModule.createDocument(app, config, {
   include: [AdminModule],

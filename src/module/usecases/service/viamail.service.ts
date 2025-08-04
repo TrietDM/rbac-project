@@ -64,6 +64,7 @@ export class ViaMailService {
       secret: process.env.JWT_SECRET,
       expiresIn: '15m',
     });
+    await this.redisClient.del(`otp:${email}`);
     await this.loginLogService.saveLog(user.id, ip, ua, platform, true);
     return {accessToken};
   }

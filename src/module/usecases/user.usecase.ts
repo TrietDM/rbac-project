@@ -44,12 +44,12 @@ export class UserUseCase {
         const hashPassword = await bcrypt.hash(dto.password,10);
     
         
-        const newuser = await this.userRepo.saveUser({
+        const newUser = await this.userRepo.saveUser({
         ...dto,
         password: hashPassword,
         });
     
-        return newuser;
+        return newUser;
       }
 
     async login(dto: loginUserDto, ip: string, ua: string, platform: string): Promise<{ accessToken: string, refreshToken: string }> {

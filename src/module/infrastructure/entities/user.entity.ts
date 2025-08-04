@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { RoleEntity } from './role.entity';
+import { PlatformEntity } from './platform.entity';
 
 @Entity('user')
 export class UserEntity {
@@ -29,11 +30,17 @@ export class UserEntity {
 
   @ManyToMany(() => RoleEntity, role => role.users)
   @JoinTable({
-    name: 'user_role', // tên bảng trung gian
+    name: 'user_role', 
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
   })
   roles: RoleEntity[];
 
-
+  @ManyToMany(() => PlatformEntity, platform => platform.users)
+  @JoinTable({
+    name: 'user_platform',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'platform_id', referencedColumnName: 'id' },
+  })
+  platforms: PlatformEntity[];
 }

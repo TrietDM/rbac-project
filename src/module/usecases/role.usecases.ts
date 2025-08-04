@@ -52,9 +52,12 @@ export class RoleUseCase {
         const permissions = await this.permissionRepo.findByIds(permissionIds);
         if(!permissions.length)
             throw new HttpException(masterDataErrorMessage.E_005(),HttpStatus.NOT_FOUND);
+
         const existingPermissionIds = new Set((role.permissions ?? []).map(u => u.id));
         const newPermission = permissions.filter(u => !existingPermissionIds.has(u.id));
+
         role.permissions = [...(role.permission ?? []), ...newPermission]
+        
         return this.roleRepo.save(role);
 
     }
@@ -78,7 +81,7 @@ export class RoleUseCase {
 
     role.users = [...(role.users ?? []), ...newUsers];
 
-    return this.roleRepo.save(role); // TypeORM sẽ tự động cập nhật bảng user_role
+    return this.roleRepo.save(role);
     }
 
 

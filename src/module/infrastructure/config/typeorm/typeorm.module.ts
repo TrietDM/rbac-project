@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { EnvironmentConfigModule } from '../environment-config/environment-config.module';
 import { EnvironmentConfigService } from '../environment-config/environment-config.service';
+import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const getTypeOrmModuleOptions = (
   config: EnvironmentConfigService,
@@ -14,7 +15,7 @@ export const getTypeOrmModuleOptions = (
     password: config.getDatabasePassword(),
     database: config.getDatabaseName(),
     entities: [__dirname + './../../**/*.entity{.ts,.js}'],
-    synchronize: true,
+    synchronize: false,
     // schema: process.env.DATABASE_SCHEMA,
     migrationsRun: true,
     migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
@@ -37,3 +38,4 @@ export const getTypeOrmModuleOptions = (
   ],
 })
 export class TypeOrmConfigModule {}
+

@@ -9,8 +9,12 @@ import { RoleRepository } from './role.repository';
 import { RoleEntity } from '../entities/role.entity';
 import { LoginLogEntity } from '../entities/login_log.entity';
 import { LoginLogRepository } from './login-log.repository';
+import { PlatformRepository } from './platform.repository';
+import { PlatformEntity } from '../entities/platform.entity';
+import { FeatureToggleRepository } from './feature-toggle.repository';
+import { FeatureToggleEntity } from '../entities/feature-toggle.entity';
 @Module({
-  imports: [TypeOrmConfigModule, TypeOrmModule.forFeature([UserEntity,PermissionEntity,RoleEntity,LoginLogEntity])],
+  imports: [TypeOrmConfigModule, TypeOrmModule.forFeature([UserEntity,PermissionEntity,RoleEntity,LoginLogEntity, PlatformEntity, FeatureToggleEntity])],
   providers: [
     {
       provide: 'IUserRepository',
@@ -28,11 +32,21 @@ import { LoginLogRepository } from './login-log.repository';
       provide: 'ILoginLogRepository',
       useClass: LoginLogRepository,
     },
+    {
+      provide: 'IPlatformRepository',
+      useClass: PlatformRepository,
+    },
+    {
+      provide: 'IFeatureToggleRepository',
+      useClass: FeatureToggleRepository,
+    },
   ],
   exports: ['IUserRepository',
     'IPermissionRepository',
     'IRoleRepository',
-    'ILoginLogRepository'
+    'ILoginLogRepository',
+    'IPlatformRepository',
+    'IFeatureToggleRepository'
   ],
 })
 export class RepositoriesModule {}

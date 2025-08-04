@@ -1,65 +1,69 @@
-// guards/permission.guard.ts
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PERMISSIONS_KEY } from './permission.decorator';
 import { masterDataErrorMessage } from 'src/module/infrastructure/message/master-data';
+import { IPlatformRepository } from 'src/module/domain/repositories/platformRepository.interface';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
 
-  canActivate(context: ExecutionContext): boolean {
+    @Inject('IPlatformRepository')
+    private platformRepo: IPlatformRepository,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
       PERMISSIONS_KEY,
-      [context.getHandler(), context.getClass()]
+      [context.getHandler(), context.getClass()],
     );
 
     if (!requiredPermissions) return true;
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-
     const platform = request['platform'];
-    const userPermissions: string[] = user?.permission ?? [];
-    if (platform === 'client'  &&['DELETE'].includes(request.method)) {
-        throw new HttpException(masterDataErrorMessage.E_009(), HttpStatus.FORBIDDEN);
-      }
-    // Super admin shortcut
-    if (user?.isSuperAdmin){
-       return true;
-    }
-    if (platform === 'admin') {
-      const hasPermission = requiredPermissions.every(p =>
-        userPermissions.includes(p),
-      );
 
-      if (!hasPermission) {
-        throw new HttpException(masterDataErrorMessage.E_010(),HttpStatus.FORBIDDEN);
-      }
-
-      return true;
+    const platformConfig = await this.platformRepo.findByName(platform);
+    if (!platformConfig) {
+      throw new HttpException('Platform không tồn tại', HttpStatus.FORBIDDEN);
     }
 
-    
-    const allowedPrefixes = ['view-', 'create-', 'edit-'];
-
-    if (platform === 'client') {
-
-      // Chỉ cho gọi các API có permission prefix phù hợp
-      const isAllAllowed = requiredPermissions.every(p =>
-        allowedPrefixes.some((prefix) => p.startsWith(prefix)),
-      );
-      const hasPermissions = requiredPermissions.every(p =>
-        userPermissions.includes(p),
-      );
-
-      if (!isAllAllowed || !hasPermissions) {
-        throw new HttpException(masterDataErrorMessage.E_010(), HttpStatus.FORBIDDEN);
-      }
-
-      return true;
+    const userPlatforms: string[] = user.platforms?.map(p => p.name) ?? [];
+    if (!userPlatforms.includes(platform)) {
+      throw new HttpException('User không có quyền truy cập platform này', HttpStatus.FORBIDDEN);
     }
 
-    return requiredPermissions.every(p => userPermissions.includes(p));
+    const disabledMethods: string[] = platformConfig.disabledMethods || [];
+    if (disabledMethods.includes(request.method)) {
+      throw new HttpException(masterDataErrorMessage.E_009(), HttpStatus.FORBIDDEN);
+    }
+
+    if (user?.isSuperAdmin) return true;
+
+    const userPermissions: string[] = user.permission ?? [];
+
+    const allowedPrefixes: string[] = platformConfig.allowedPrefixes ?? [];
+    const hasValidPrefix = requiredPermissions.every(p =>
+      allowedPrefixes.length === 0 || allowedPrefixes.some(prefix => p.startsWith(prefix)),
+    );
+
+    const hasAllPermissions = requiredPermissions.every(p =>
+      userPermissions.includes(p),
+    );
+
+    if (!hasValidPrefix || !hasAllPermissions) {
+      throw new HttpException(masterDataErrorMessage.E_010(), HttpStatus.FORBIDDEN);
+    }
+
+    return true;
   }
 }

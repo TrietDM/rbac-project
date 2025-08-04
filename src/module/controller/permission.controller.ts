@@ -3,6 +3,7 @@ import { createPermissionDto } from './dtos/permission/createPermission.dto';
 import { updatePermissionDto } from './dtos/permission/updatePermission.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { PermissionUseCase } from 'src/module/usecases/permission.usecases';
+import { RequirePermissions } from '../usecases/auth/permission.decorator';
 
     @ApiTags('Permissions')
     @Controller('permissions')
@@ -11,24 +12,26 @@ import { PermissionUseCase } from 'src/module/usecases/permission.usecases';
             private readonly permissionUsecase: PermissionUseCase,
         ) {}
 
+
+    @RequirePermissions()
     @Get()
     async getallPermissions() {
         return this.permissionUsecase.findAll();
     }
 
- 
+    @RequirePermissions()
     @Post('/create')
     async register(@Body() body: createPermissionDto){
         return this.permissionUsecase.create(body);
     }
 
-
+    @RequirePermissions()
     @Put(':id')
     async updateUser(@Param('id') id: number,@Body() body: updatePermissionDto){
         return this.permissionUsecase.update(id,body);
     }
 
-
+    @RequirePermissions()
     @Delete(':id')
     async delete(@Param('id') id: number) {
         return this.permissionUsecase.delete(id);
