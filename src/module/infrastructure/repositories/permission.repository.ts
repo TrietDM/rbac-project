@@ -3,8 +3,8 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository, ILike, In } from 'typeorm';
 
 import { IPermissionRepository } from '../../domain/repositories/permissionRepository.interface';
-import { createPermissionDto } from '../../controller/dtos/permission/createPermission.dto';
-import { updatePermissionDto } from '../../controller/dtos/permission/updatePermission.dto';
+import { CreatePermissionDto } from '../../controller/dtos/permission/createPermission.dto';
+import { UpdatePermissionDto } from '../../controller/dtos/permission/updatePermission.dto';
 import { PermissionEntity } from '../entities/permission.entity';
 
 @Injectable()
@@ -21,14 +21,14 @@ export class PermissionRepository implements IPermissionRepository {
     return await this.permissionRepo.find();
   }
 
-  async create(dto: createPermissionDto): Promise<PermissionEntity>{
+  async create(dto: CreatePermissionDto): Promise<PermissionEntity>{
       const newPermission = this.permissionRepo.create({
         ...dto
       });
       return await this.permissionRepo.save(newPermission);
   }
 
-  async update(id: number, dto: updatePermissionDto): Promise<PermissionEntity> {
+  async update(id: number, dto: UpdatePermissionDto): Promise<PermissionEntity> {
       const permission = await this.permissionRepo.findOne({where: {id: id}});
       const update = {...permission,  ...dto};
       return await this.permissionRepo.save(update);
@@ -49,10 +49,6 @@ export class PermissionRepository implements IPermissionRepository {
       where :{name}
     });
   }
-  async findByIds(ids: number[]): Promise<any>{
-      return this.permissionRepo.find({
-        where : { id: In (ids)} ,       
-      });
-    }
+
 }
  

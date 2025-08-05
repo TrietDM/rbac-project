@@ -1,11 +1,13 @@
 import { HttpException, HttpStatus, Inject } from "@nestjs/common";
-import { createRoleDto } from "../controller/dtos/role/createRole.dto";
-import { updateRoleDto } from "../controller/dtos/role/updateRole.dto";
+import { CreateRoleDto } from "../controller/dtos/role/createRole.dto";
+import { UpdateRoleDto } from "../controller/dtos/role/updateRole.dto";
 import { IRoleRepository } from "../domain/repositories/roleRepository.interface";
 import { RoleEntity } from "../infrastructure/entities/role.entity";
 import { masterDataErrorMessage } from "../infrastructure/message/master-data";
 import { IUserRepository } from "../domain/repositories/userRepository.interface";
 import { IPermissionRepository } from "../domain/repositories/permissionRepository.interface";
+import { AssignRoleDto } from "../controller/dtos/role/assignRole.dto";
+import { AssignPermissionDto } from "../controller/dtos/role/assignPermission.dto";
 
 export class RoleUseCase {
     constructor(
@@ -24,14 +26,14 @@ export class RoleUseCase {
         return await this.roleRepo.findAll();
     }
 
-    async create(dto: createRoleDto): Promise<RoleEntity>{
+    async create(dto: CreateRoleDto): Promise<RoleEntity>{
         const existingRole = await this.roleRepo.findByName(dto.name);    
         if(existingRole)
             throw new HttpException(masterDataErrorMessage.E_007(), HttpStatus.BAD_REQUEST);
         return await this.roleRepo.create(dto);
     }
 
-    async update(id: number, dto: updateRoleDto): Promise<RoleEntity>{
+    async update(id: number, dto: UpdateRoleDto): Promise<RoleEntity>{
         const existingRole = await this.roleRepo.findById(id);
         if(!existingRole)
             throw new HttpException(masterDataErrorMessage.E_008(),HttpStatus.NOT_FOUND)
@@ -45,41 +47,43 @@ export class RoleUseCase {
         return await this.roleRepo.delete(id);
     }
 
-    async assignPermissionToRole(id: number, permissionIds: number[] ){
-        const role = await this.roleRepo.findById(id);    
+    async assignPermissionToRole(dto: AssignPermissionDto): Promise<RoleEntity> {
+        const role = await this.roleRepo.findById(dto.roleId);    
         if(!role)
             throw new HttpException(masterDataErrorMessage.E_008(), HttpStatus.NOT_FOUND);
-        const permissions = await this.permissionRepo.findByIds(permissionIds);
+        const permissions = await this.permissionRepo.findById(dto.permissionId);
         if(!permissions.length)
             throw new HttpException(masterDataErrorMessage.E_005(),HttpStatus.NOT_FOUND);
 
-        const existingPermissionIds = new Set((role.permissions ?? []).map(u => u.id));
-        const newPermission = permissions.filter(u => !existingPermissionIds.has(u.id));
+        const permission = role.permission.find(p => p.id === dto.permissionId);
+        if (permission) {
+            throw new HttpException(masterDataErrorMessage.E_014, HttpStatus.BAD_REQUEST);
+        }
 
-        role.permissions = [...(role.permission ?? []), ...newPermission]
-        
+        role.permissions.push({ id: dto.permissionId } as any);
         return this.roleRepo.save(role);
 
     }
 
 
-    async assignUsersToRole(id: number, userIds: number[]) {
-    const role = await this.roleRepo.findById(id);
+    async assignUsersToRole(dto: AssignRoleDto): Promise<RoleEntity> {
+    const role = await this.roleRepo.findById(dto.roleId);
 
     if (!role) {
-        throw new HttpException('Role not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(masterDataErrorMessage.E_008, HttpStatus.NOT_FOUND);
     }
 
-    const users = await this.userRepo.findByIds(userIds);
-    if (!users.length) {
-        throw new HttpException('No users found', HttpStatus.NOT_FOUND);
+    const existingUser = await this.userRepo.findById(dto.userId);
+    if (!existingUser   ) {
+        throw new HttpException(masterDataErrorMessage.E_002, HttpStatus.NOT_FOUND);
     }
 
-    // Tránh lỗi undefined + tránh trùng lặp
-    const existingUserIds = new Set((role.users ?? []).map(u => u.id));
-    const newUsers = users.filter(u => !existingUserIds.has(u.id));
+    const user = role.users.find(user => user.id === dto.userId);
+    if (user) {
+        throw new HttpException(masterDataErrorMessage.E_014, HttpStatus.BAD_REQUEST);
+    }
 
-    role.users = [...(role.users ?? []), ...newUsers];
+    role.users.push({ id: dto.userId } as any); 
 
     return this.roleRepo.save(role);
     }

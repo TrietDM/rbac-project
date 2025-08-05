@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEmail, IsString } from "class-validator";
 
-export class getListUserDto {
+export class GetListUserDto {
     @ApiPropertyOptional()
     @IsString()
     username?: string;

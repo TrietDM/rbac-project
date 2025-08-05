@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
-import { createRoleDto } from './dtos/role/createRole.dto';
-import { updateRoleDto } from './dtos/role/updateRole.dto';
+import { CreateRoleDto } from './dtos/role/createRole.dto';
+import { UpdateRoleDto } from './dtos/role/updateRole.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RoleUseCase } from 'src/module/usecases/role.usecases';
 import { RequirePermissions } from '../usecases/auth/permission.decorator';
@@ -24,7 +24,7 @@ import { AssignPermissionDto } from './dtos/role/assignPermission.dto';
 
     @RequirePermissions('create-role')
     @Post('/create')
-    async register(@Body() body: createRoleDto){
+    async register(@Body() body: CreateRoleDto){
         return this.roleUsecase.create(body);
     }
 
@@ -53,7 +53,7 @@ import { AssignPermissionDto } from './dtos/role/assignPermission.dto';
 
     @RequirePermissions('edit-role')
     @Put(':id')
-    async updateUser(@Param('id') id: number,@Body() body: updateRoleDto){
+    async updateUser(@Param('id') id: number,@Body() body: UpdateRoleDto){
         return this.roleUsecase.update(id,body);
     }
 }

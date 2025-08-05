@@ -2,12 +2,12 @@ import { HttpException, HttpStatus, Inject } from "@nestjs/common";
 import { IUserRepository } from "../domain/repositories/userRepository.interface";
 import { UserEntity } from "../infrastructure/entities/user.entity";
 import { masterDataErrorMessage } from "../infrastructure/message/master-data";
-import { loginUserDto } from "../controller/dtos/user/login.dto";
+import { LoginUserDto } from "../controller/dtos/user/login.dto";
 import * as bcrypt from 'bcryptjs';
-import { createUserDto } from "../controller/dtos/user/register.dto";
-import { updateUserDto } from "../controller/dtos/user/update.dto";
+import { CreateUserDto } from "../controller/dtos/user/register.dto";
+import { UpdateUserDto } from "../controller/dtos/user/update.dto";
 import { JwtService } from "@nestjs/jwt";
-import { getListUserDto } from "../controller/dtos/user/getlist.dto";
+import { GetListUserDto } from "../controller/dtos/user/getlist.dto";
 import { LoginLogService } from "./service/login-log.service";
 import { PermissionUseCase } from "./permission.usecases";
 
@@ -22,7 +22,7 @@ export class UserUseCase {
         private readonly loginLogService: LoginLogService,
     ){}
 
-    async findAll(dto: getListUserDto): Promise<UserEntity[]>{
+    async findAll(dto: GetListUserDto): Promise<UserEntity[]>{
         return await this.userRepo.findAll(dto);
     }
 
@@ -33,7 +33,7 @@ export class UserUseCase {
         return existingUser;
     }
 
-    async register(dto: createUserDto): Promise<UserEntity> {
+    async register(dto: CreateUserDto): Promise<UserEntity> {
         const checkUsername = await this.userRepo.findByName(dto.username);
         const checkEmail = await this.userRepo.findByEmail(dto.email);
         if(checkUsername)
@@ -52,7 +52,7 @@ export class UserUseCase {
         return newUser;
       }
 
-    async login(dto: loginUserDto, ip: string, ua: string, platform: string): Promise<{ accessToken: string, refreshToken: string }> {
+    async login(dto: LoginUserDto, ip: string, ua: string, platform: string): Promise<{ accessToken: string, refreshToken: string }> {
         const user = await this.userRepo.findByName(dto.username);
         if (!user) {
           throw new HttpException(masterDataErrorMessage.E_002(),HttpStatus.NOT_FOUND)
@@ -92,7 +92,7 @@ export class UserUseCase {
         return { accessToken, refreshToken };
       }
 
-    async update(id: number, dto: updateUserDto): Promise<UserEntity>{
+    async update(id: number, dto: UpdateUserDto): Promise<UserEntity>{
         const existingUser = await this.userRepo.findById(id);
         if(!existingUser)
             throw new HttpException(masterDataErrorMessage.E_002(),HttpStatus.NOT_FOUND)

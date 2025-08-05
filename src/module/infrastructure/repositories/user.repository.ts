@@ -6,8 +6,8 @@ import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import { UserEntity } from '../entities/user.entity';
-import { updateUserDto } from '../../controller/dtos/user/update.dto';
-import { getListUserDto } from '../../controller/dtos/user/getlist.dto';
+import { UpdateUserDto } from '../../controller/dtos/user/update.dto';
+import { GetListUserDto } from '../../controller/dtos/user/getlist.dto';
 import { In } from 'typeorm';
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,7 +22,7 @@ export class UserRepository implements IUserRepository {
   ) {}
 
 
-  async findAll(dto: getListUserDto): Promise<UserEntity[]> {
+  async findAll(dto: GetListUserDto): Promise<UserEntity[]> {
     let queryBuilder = this.userRepo.createQueryBuilder('u')
       .orderBy('u.create_at', 'DESC');
 
@@ -43,7 +43,7 @@ export class UserRepository implements IUserRepository {
   }
 
 
-  async updateUser(id: number,dto: updateUserDto): Promise<UserEntity>{
+  async updateUser(id: number,dto: UpdateUserDto): Promise<UserEntity>{
     const user = await this.userRepo.findOne({
       where :{id: id}
     });
@@ -76,9 +76,4 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async findByIds(ids: number[]): Promise<any>{
-    return this.userRepo.find({
-      where : { id: In (ids)} ,       
-    });
-  }
 }

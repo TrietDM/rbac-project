@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Req} from '@nestjs/common';
-import { createUserDto } from './dtos/user/register.dto';
-import { loginUserDto } from './dtos/user/login.dto';
-import { updateUserDto } from './dtos/user/update.dto';
+import { CreateUserDto } from './dtos/user/register.dto';
+import { LoginUserDto } from './dtos/user/login.dto';
+import { UpdateUserDto } from './dtos/user/update.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { getListUserDto } from './dtos/user/getlist.dto';
+import { GetListUserDto } from './dtos/user/getlist.dto';
 import { UserUseCase } from '../usecases/user.usecase';
 import { ViaMailService } from '../usecases/service/viamail.service';
 import { LoginViaMailDto } from './dtos/user/loginviamail.dto';
@@ -21,7 +21,7 @@ import { RequirePermissions } from '../usecases/auth/permission.decorator';
         ) {}
     @RequirePermissions('view-user')
     @Get()
-    async findAllUsers(dto: getListUserDto) {
+    async findAllUsers(dto: GetListUserDto) {
         return await this.userUseCase.findAll(dto);
     }
 
@@ -32,12 +32,12 @@ import { RequirePermissions } from '../usecases/auth/permission.decorator';
     }
 
     @Post('/register')
-    async register(@Body() body: createUserDto){
+    async register(@Body() body: CreateUserDto){
         return await this.userUseCase.register(body);
     }
 
     @Post('/login')
-    async login(@Req() req, @Body() body: loginUserDto){
+    async login(@Req() req, @Body() body: LoginUserDto){
         const platform = req['platform'];
         const ip = req.ip;
         const ua = req.headers['user-agent'];
@@ -60,7 +60,7 @@ import { RequirePermissions } from '../usecases/auth/permission.decorator';
 
     @RequirePermissions('edit-user')
     @Put(':id')
-    async updateUser(@Param('id') id: number,@Body() body: updateUserDto){
+    async updateUser(@Param('id') id: number,@Body() body: UpdateUserDto){
         return await this.userUseCase.update(id,body);
     }
 

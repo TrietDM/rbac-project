@@ -9,6 +9,7 @@ import { LoginLogService } from './service/login-log.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoginLogEntity } from '../infrastructure/entities/login_log.entity';
 import { FeatureToggleService } from './service/feature-toggle.service';
+import { PlatformUseCase } from './platform.usecases';
 
 
 @Module({
@@ -23,6 +24,7 @@ import { FeatureToggleService } from './service/feature-toggle.service';
      ViaMailService,
      LoginLogService,
      FeatureToggleService,
+     PlatformUseCase,
     ],
     exports: [PermissionUseCase,
      UserUseCase,
@@ -30,6 +32,7 @@ import { FeatureToggleService } from './service/feature-toggle.service';
      ViaMailService,
      LoginLogService,
      FeatureToggleService,
+     PlatformUseCase,
   ],
 })
 export class UseCasesModule {}

@@ -1,10 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNumber } from "class-validator";
+import { IsNumber } from "class-validator";
 
-export class AssignRoleDto {
+export class AssignPlatformDto {
   @ApiProperty()
   @IsNumber()
-  roleId: number;
+  platformId: number;
 
   @ApiProperty()
   @IsNumber()

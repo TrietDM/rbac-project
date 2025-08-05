@@ -42,6 +42,26 @@ export const masterDataErrorMessage = {
         const e = buildErrorDetail('010', 'PERMISSION_DENIED', detail);
         return e;
     },
+    E_011(detail: string = ""): TErrorMessage{
+        const e = buildErrorDetail('011', 'PLATFORM_NOT_FOUND', detail);
+        return e;
+    },
+    E_012(detail: string = ""): TErrorMessage{
+        const e = buildErrorDetail('012', 'PLATFORM_EXISTED', detail);
+        return e;
+    },
+    E_013(detail: string = ""): TErrorMessage{
+        const e = buildErrorDetail('013', 'USER_ALREADY_ASSIGNED_TO_PLATFORM', detail);
+        return e;
+    },
+    E_014(detail: string = ""): TErrorMessage{
+        const e = buildErrorDetail('014', 'USER_ALREADY_ASSIGNED_TO_ROLE', detail);
+        return e;
+    },
+    E_015(detail: string = ""): TErrorMessage{
+        const e = buildErrorDetail('015', 'PERMISSION_ALREADY_ASSIGNED_TO_ROLE', detail);
+        return e;
+    },
 
 
 }

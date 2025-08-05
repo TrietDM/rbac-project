@@ -6,8 +6,8 @@ import { DataSource, Repository, ILike } from 'typeorm';
 import { RoleEntity } from '../entities/role.entity';
 import { mustExist } from 'src/shared/utils/assert';
 import { IRoleRepository } from 'src/module/domain/repositories/roleRepository.interface';
-import { createRoleDto } from 'src/module/controller/dtos/role/createRole.dto';
-import { updateRoleDto } from 'src/module/controller/dtos/role/updateRole.dto';
+import { CreateRoleDto } from 'src/module/controller/dtos/role/createRole.dto';
+import { UpdateRoleDto } from 'src/module/controller/dtos/role/updateRole.dto';
 
 @Injectable()
 export class RoleRepository implements IRoleRepository {
@@ -21,14 +21,14 @@ export class RoleRepository implements IRoleRepository {
     return await this.roleRepo.find();
   }
 
-  async create(dto: createRoleDto): Promise<RoleEntity>{
+  async create(dto: CreateRoleDto): Promise<RoleEntity>{
       const newRole = this.roleRepo.create({
         ...dto
       });
       return await this.roleRepo.save(newRole);
   }
 
-  async update(id: number, dto: updateRoleDto): Promise<RoleEntity> {
+  async update(id: number, dto: UpdateRoleDto): Promise<RoleEntity> {
       const role = await this.roleRepo.findOne({where: {id: id}});
       const update = {...role,  ...dto};
       return await this.roleRepo.save(update);

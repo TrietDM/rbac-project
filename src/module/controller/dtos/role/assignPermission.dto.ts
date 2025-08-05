@@ -7,7 +7,6 @@ export class AssignPermissionDto {
   roleId: number;
 
   @ApiProperty()
-  @IsArray()
-  @IsNumber({}, { each: true })
-  permissionIds: number[];
+  @IsNumber()
+  permissionId: number;
 }

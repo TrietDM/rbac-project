@@ -7,6 +7,7 @@ import { UseCasesModule } from '../usecases/usecase.module';
 import { RoleController } from './role.controller';
 import { JwtService } from '@nestjs/jwt';
 import { FeatureToggleController } from './feature-toggle.controller';
+import { PlatformController } from './platform.controller';
 
 @Module({
   imports: [RepositoriesModule, EnvironmentConfigModule,UseCasesModule],
@@ -15,6 +16,7 @@ import { FeatureToggleController } from './feature-toggle.controller';
     PermissionController,
     RoleController,
     FeatureToggleController,
+    PlatformController,
     ],
     providers: [JwtService]
 })
