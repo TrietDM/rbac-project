@@ -57,7 +57,7 @@ export class RoleUseCase {
 
         const permission = role.permission.find(p => p.id === dto.permissionId);
         if (permission) {
-            throw new HttpException(masterDataErrorMessage.E_014, HttpStatus.BAD_REQUEST);
+            throw new HttpException(masterDataErrorMessage.E_015(), HttpStatus.BAD_REQUEST);
         }
 
         role.permissions.push({ id: dto.permissionId } as any);
@@ -70,17 +70,17 @@ export class RoleUseCase {
     const role = await this.roleRepo.findById(dto.roleId);
 
     if (!role) {
-        throw new HttpException(masterDataErrorMessage.E_008, HttpStatus.NOT_FOUND);
+        throw new HttpException(masterDataErrorMessage.E_008(), HttpStatus.NOT_FOUND);
     }
 
     const existingUser = await this.userRepo.findById(dto.userId);
     if (!existingUser   ) {
-        throw new HttpException(masterDataErrorMessage.E_002, HttpStatus.NOT_FOUND);
+        throw new HttpException(masterDataErrorMessage.E_002(), HttpStatus.NOT_FOUND);
     }
 
     const user = role.users.find(user => user.id === dto.userId);
     if (user) {
-        throw new HttpException(masterDataErrorMessage.E_014, HttpStatus.BAD_REQUEST);
+        throw new HttpException(masterDataErrorMessage.E_014(), HttpStatus.BAD_REQUEST);
     }
 
     role.users.push({ id: dto.userId } as any); 

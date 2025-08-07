@@ -13,25 +13,25 @@ import { RequirePermissions } from '../usecases/auth/permission.decorator';
         ) {}
 
 
-    @RequirePermissions()
+    @RequirePermissions('view-permission')
     @Get()
     async getallPermissions() {
         return this.permissionUsecase.findAll();
     }
 
-    @RequirePermissions()
+    @RequirePermissions('create-permission')
     @Post('/create')
     async register(@Body() body: CreatePermissionDto){
         return this.permissionUsecase.create(body);
     }
 
-    @RequirePermissions()
+    @RequirePermissions('edit-permission')
     @Put(':id')
     async updateUser(@Param('id') id: number,@Body() body: UpdatePermissionDto){
         return this.permissionUsecase.update(id,body);
     }
 
-    @RequirePermissions()
+    @RequirePermissions('delete-permission')
     @Delete(':id')
     async delete(@Param('id') id: number) {
         return this.permissionUsecase.delete(id);

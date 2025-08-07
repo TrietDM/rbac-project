@@ -41,13 +41,13 @@ import { AssignPermissionDto } from './dtos/role/assignPermission.dto';
     @Put('users-assign')
     @RequirePermissions('role-assign')
     async assignUsers(@Body() dto: AssignRoleDto) {
-        return this.roleUsecase.assignUsersToRole(dto.roleId, dto.userIds);
+        return this.roleUsecase.assignUsersToRole(dto);
     }
 
     @Put('permissions-assign')
     @RequirePermissions('role-assign')
     async assignPermission(@Body() dto: AssignPermissionDto) {
-        return this.roleUsecase.assignPermissionToRole(dto.roleId, dto.permissionIds);
+        return this.roleUsecase.assignPermissionToRole(dto);
     }
 
 
